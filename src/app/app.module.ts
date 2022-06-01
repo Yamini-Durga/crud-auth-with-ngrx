@@ -10,17 +10,18 @@ import { HeaderComponent } from './header/header.component';
 import { StoreDevtoolsModule } from '@ngrx/store-devtools';
 import { environment } from 'src/environments/environment.prod';
 import { EffectsModule } from '@ngrx/effects';
-import { HttpClientModule } from '@angular/common/http';
+import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { LoadingSpinnerComponent } from './shared/components/loading-spinner/loading-spinner.component';
 import { AppReducer } from './Store/app.state';
 import { AuthEffects } from './auth/state/auth.effect';
+import { AuthtokenIntercept } from './services/authtoken.interceptor';
 
 @NgModule({
   declarations: [
     AppComponent,
     HomeComponent,
     HeaderComponent,
-    LoadingSpinnerComponent
+    LoadingSpinnerComponent,
   ],
   imports: [
     BrowserModule,
@@ -28,13 +29,15 @@ import { AuthEffects } from './auth/state/auth.effect';
     FormsModule,
     StoreModule.forRoot(AppReducer),
     StoreDevtoolsModule.instrument({
-      logOnly: environment.production
+      logOnly: environment.production,
     }),
     EffectsModule.forRoot([AuthEffects]),
     ReactiveFormsModule,
-    HttpClientModule
+    HttpClientModule,
   ],
-  providers: [],
-  bootstrap: [AppComponent]
+  providers: [
+    { provide: HTTP_INTERCEPTORS, useClass: AuthtokenIntercept, multi: true },
+  ],
+  bootstrap: [AppComponent],
 })
-export class AppModule { }
+export class AppModule {}

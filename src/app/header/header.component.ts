@@ -8,16 +8,16 @@ import { AppState } from '../Store/app.state';
 @Component({
   selector: 'app-header',
   templateUrl: './header.component.html',
-  styleUrls: ['./header.component.css']
+  styleUrls: ['./header.component.css'],
 })
 export class HeaderComponent implements OnInit {
   isAuthenticated: Observable<boolean>;
-  constructor(private store: Store<AppState>) { }
+  constructor(private store: Store<AppState>) {}
 
   ngOnInit(): void {
     this.isAuthenticated = this.store.select(isAuthenticated);
   }
-  onLogout(event: Event){
+  onLogout(event: Event) {
     event.preventDefault();
     this.store.dispatch(logoutAction());
   }
