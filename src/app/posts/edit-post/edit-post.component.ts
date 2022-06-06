@@ -18,26 +18,35 @@ export class EditPostComponent implements OnInit, OnDestroy {
   id: string;
   postForm: FormGroup;
   postSub: Subscription;
-  constructor(private route: ActivatedRoute,
+  constructor(
               private store: Store<AppState>,
               private router: Router
     ) { }
 
   ngOnInit(): void {
-    this.route.params.subscribe(params => {
-      this.id = params.id;
-      this.postSub = this.store.select(getPostById, {id: this.id})
-        .subscribe(post => {
-          this.post = post;
-          this.createUpdateForm();
-        });
-    });
+    // this.route.params.subscribe(params => {
+    //   this.id = params.id;
+    //   this.postSub = this.store.select(getPostById, {id: this.id})
+    //     .subscribe(post => {
+    //       this.post = post;
+    //       this.createUpdateForm();
+    //     });
+    // });
+    this.createUpdateForm();
+    this.store.select(getPostById).subscribe(post => {
+      if(post){
+        this.postForm.patchValue({
+        title: post.title,
+        description: post.description
+      })
+      }
+    })
   }
 
   createUpdateForm(){
     this.postForm = new FormGroup({
-      title: new FormControl(this.post.title, [Validators.required, Validators.minLength(4)]),
-      description: new FormControl(this.post.description, [Validators.required, Validators.minLength(6)])
+      title: new FormControl(null, [Validators.required, Validators.minLength(4)]),
+      description: new FormControl(null, [Validators.required, Validators.minLength(6)])
     })
   }
 

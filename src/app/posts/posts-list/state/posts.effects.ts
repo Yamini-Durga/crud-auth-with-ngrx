@@ -1,6 +1,9 @@
 import { Injectable } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
-import { map, mergeMap, switchMap } from 'rxjs/operators';
+import { Update } from '@ngrx/entity';
+import { RouterNavigatedAction, ROUTER_NAVIGATION } from '@ngrx/router-store';
+import { filter, map, mergeMap, switchMap } from 'rxjs/operators';
+import { Post } from 'src/app/models/post.model';
 import { PostsService } from 'src/app/services/posts.service';
 import {
   addedPostAction,
@@ -11,6 +14,7 @@ import {
   loadPosts,
   updatedPostAction,
   updatePostAction,
+  viewPost,
 } from './posts.actions';
 
 @Injectable()
@@ -50,7 +54,12 @@ export class PostsEffects {
       mergeMap((action) => {
         return this.postsService.updatePost(action.post).pipe(
           map((data) => {
-            return updatedPostAction({ post: action.post });
+            // return updatedPostAction({ post: action.post });
+            const updatedPost: Update<Post> = {
+              id: action.post.id,
+              changes: {...action.post}
+            };
+            return updatedPostAction({ post: updatedPost })
           })
         );
       })
@@ -69,4 +78,24 @@ export class PostsEffects {
       })
     );
   });
+
+  getSinglePostById$ = createEffect(() => {
+    return this.actions$.pipe(
+      ofType(ROUTER_NAVIGATION),
+      filter((r: RouterNavigatedAction) => {
+        return r.payload.routerState.url.startsWith('/posts/view');
+      }),
+      map((r: RouterNavigatedAction) => {
+        return r.payload.routerState['params']['id'];
+      }),
+      switchMap(id => {
+        return this.postsService.getPostById(id).pipe(
+          map(p => {
+            const postData = [{...p['post'], id}];
+            return loadedPosts({posts: postData});
+          })
+        )
+      })
+    )
+  })
 }

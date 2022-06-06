@@ -22,7 +22,9 @@
                     <td>
                         <a class="btn btn-info" [routerLink]="['edit', post.id]"
                             routerLinkActive="router-link-active">Update</a>&nbsp;
-                        <a class="btn btn-danger" (click)="onDeletePost(post.id)">Delete</a>
+                        <a class="btn btn-danger" (click)="onDeletePost(post.id)">Delete</a>&nbsp;
+                        <a class="btn btn-warning" [routerLink]="['view', post.id]"
+                            routerLinkActive="router-link-active">View</a>
                     </td>
                 </tr>
             </tbody>
